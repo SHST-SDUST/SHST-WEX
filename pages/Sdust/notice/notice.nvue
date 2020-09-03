@@ -2,15 +2,15 @@
 	<scrollpage>
 
 			<headslot title="科大公告"></headslot>
-			<view style="margin-top: 10px;"></view>
+			<view class="gap"></view>
 
 			<layout v-for="(item,index) in notice" :key="index">
-				<view style="flex-direction: row;align-items: center;"  @tap="jump" :data-id="item.id">
+				<view style="flex-direction: row;align-items: center;"  @click="jump(item.id)" >
 					<view class="fill">
-						<text class='text title'>{{item.title}}</text>
-						<text class='text time'>{{item.create_time}}</text>
+						<text class="text title">{{item.title}}</text>
+						<text class="text time">{{item.create_time}}</text>
 					</view>
-					<view class="rightJump border">
+					<view class="right-jump border">
 						<text class="iconfont" style="color: #AAAAAA;">&#xe743;</text>
 					</view>
 				</view>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-	const app = getApp()
 	import layout from "@/components/layout.nvue"
 	import headslot from "@/components/headslot.nvue"
 	import scrollpage from "@/components/scrollpage.nvue"
@@ -30,31 +29,28 @@
 			headslot,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				notice: [],
 				signalPage: false
 			}
 		},
-		onReady: function() {
-			var that = this;
-			app.ajax({
+		created: async function() {
+			var res = await uni.$app.request({
 				load: 2,
-				url: 'http://app.sdust.edu.cn/index/index/index/style/7/page/0',
-				fun: res => {
-					that.notice = res.data.data.info;
-				}
-			})
+				url: "http://app.sdust.edu.cn/index/index/index/style/7/page/0",
+            })
+			this.notice = res.data.data.info;
 		},
 		methods: {
-			jump: function(e) {
-				if (!e.currentTarget.dataset.id) {
+			jump: function(id) {
+				if (!id) {
 					app.toast("出错了");
-					return false;
+					return void 0;
 				}
-				var url = encodeURIComponent(`http://app.sdust.edu.cn/index/index/detail/id/${e.currentTarget.dataset.id}/isapp/2`);
+				var url = encodeURIComponent(`http://app.sdust.edu.cn/index/index/detail/id/${id}/isapp/2`);
 				uni.navigateTo({
-					url: '/pages/Home/auxiliary/webview?url=' + url
+					url: "/pages/home/auxiliary/webview?url=" + url
 				})
 			}
 		}
@@ -62,7 +58,12 @@
 </script>
 
 <style>
-	.rightJump {
+
+    .gap{
+        height: 10px;
+    }
+
+	.right-jump {
 		width: 50px;
 		flex-direction: row;
 		align-items: center;

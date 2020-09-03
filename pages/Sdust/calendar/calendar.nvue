@@ -3,7 +3,7 @@
 
 			<view>
 				<layout title="校历查询">
-					<view class="selectCon">
+					<view class="select-con">
 						<text class="text">请选择学期</text>
 						<picker @change="bindPickerChange" :value="index" :range="range" class="link">
 							<text class="text link">{{range[index]}}</text>
@@ -15,72 +15,62 @@
 
 			<view v-if="show">
 				<layout :title="term">
-					<view class='weekGroup'>
-						<text class='weekUnit'>Week</text>
-						<text class='weekUnit'>Mon</text>
-						<text class='weekUnit'>Tue</text>
-						<text class='weekUnit'>Wed</text>
-						<text class='weekUnit'>Thur</text>
-						<text class='weekUnit'>Fri</text>
-						<text class='weekUnit'>Sat</text>
-						<text class='weekUnit'>Sun</text>
+					<view class="week-group">
+						<text class="week-unit">Week</text>
+						<text class="week-unit">Mon</text>
+						<text class="week-unit">Tue</text>
+						<text class="week-unit">Wed</text>
+						<text class="week-unit">Thur</text>
+						<text class="week-unit">Fri</text>
+						<text class="week-unit">Sat</text>
+						<text class="week-unit">Sun</text>
 					</view>
 					<view class="timetablehr"></view>
-					<view v-for="(item,index) in calendarObj" :key="index" class='con'>
-						<view class='line'>
+					<view v-for="(item,index) in calendarObj" :key="index" class="con">
+						<view class="line">
 							<view class="fill" v-for="(inner,innerIndex) in item" :key="innerIndex" >
-									<text class="text" :class='inner.className'>{{inner.day}}</text>
+									<text class="text" :class="inner.className">{{inner.day}}</text>
 							</view>
 						</view>
 					</view>
 				</layout>
 			</view>
-			
+
 	</scrollpage>
 </template>
 
 <script>
-	const app = getApp()
-	const util = require("@/utils/util.js")
-	import layout from "@/components/layout.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
+	import util from "@/modules/datetime.js";
+	import layout from "@/components/layout.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				range: ["请稍后"],
 				index: 0,
-				show: 0,
+				show: false,
 				term: "",
 				calendarObj: []
 			}
 		},
-		onLoad() {
+		created: async function() {
 			util.extDate(); //拓展Date原型
-			var that = this
-			uni.request({
-				url: "https://www.touchczy.top/ext/calendar",
+			var res = await uni.$app.request({
+				url: "https://shst.touchczy.top/ext/calendar",
 				header: {
-					'content-type': 'application/x-www-form-urlencoded'
+					"content-type": "application/x-www-form-urlencoded"
 				},
-				success: (res) => {
-					res.data.info = res.data.info.reverse();
-					that.data = res.data.info
-					var range = [];
-					res.data.info.forEach((value) => {
-						range.push(value.term);
-					})
-					that.range = range;
-					that.bindPickerChange({
-						detail: {
-							value: 0
-						}
-					})
-				}
-			})
+            })
+            res.data.info = res.data.info.reverse();
+            this.data = res.data.info;
+            var range = [];
+            res.data.info.forEach((value) => range.push(value.term));
+            this.range = range;
+            this.bindPickerChange({detail: {value: 0}});
 		},
 		methods: {
 			getNowFormatDate: (yearAdd = 0, monthAdd = 0, dayAdd = 0) => {
@@ -137,15 +127,15 @@
 					}
 					calendarObj.push(lineCalen);
 				}
-				this.calendarObj = calendarObj
-				this.show = 1
+				this.calendarObj = calendarObj;
+				this.show = true;
 			}
 		}
 	}
 </script>
 
 <style>
-	.selectCon {
+	.select-con {
 		flex-direction: row;
 		justify-content: space-between;
 		padding: 15px 10px 5px 10px;
@@ -169,12 +159,12 @@
 		color: red;
 	}
 
-	.weekGroup {
+	.week-group {
 		flex-direction: row;
 		margin-top: 7px;
 	}
 
-	.weekUnit {
+	.week-unit {
 		text-align: center;
 		padding: 5px 0;
 		font-size: 12px;
@@ -196,5 +186,5 @@
 	.week {
 		color: rgb(12, 114, 240);
 	}
-	
+
 </style>

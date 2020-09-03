@@ -1,9 +1,9 @@
 <template>
 	<scrollpage>
-		
+
 			<layout title="最近使用" v-if="recentUse.length">
-				<view class="y-CenterCon" style="margin-top: 20px;">
-					<view v-for="(innerItem) in recentUse" :key="innerItem.title" :data-obj="innerItem" class='icon' @tap='jump'>
+				<view class="y-center a-lmt">
+					<view v-for="(innerItem) in recentUse" :key="innerItem.title"class="icon" @click="jump(innerItem)">
 						<image class="img" :src="'http://windrunner_max.gitee.io/imgpath/SHST/Light/'+innerItem.img"></image>
 						<text class="text" style="margin-top: 6px;">{{innerItem.title}}</text>
 					</view>
@@ -12,9 +12,10 @@
 
 			<layout title="应用列表">
 				<view v-for="(item,index) in lightList" :key="index">
-					<view class="y-CenterCon" style="margin-top: 20px;">
-						<view v-for="(innerItem,innderIndex) in item" :key="innderIndex" :data-obj="innerItem" class='icon fill' @tap='jump'>
-							<image class="img" v-if="innerItem.img" :src="'http://windrunner_max.gitee.io/imgpath/SHST/Light/'+innerItem.img"></image>
+					<view class="y-center a-lmt">
+						<view v-for="(innerItem,innderIndex) in item" :key="innderIndex" class="icon fill" @click="jump(innerItem)">
+							<image class="img" v-if="innerItem.img"
+                                :src="'http://windrunner_max.gitee.io/imgpath/SHST/Light/'+innerItem.img"></image>
 							<text class="text" v-if="innerItem.title">{{innerItem.title}}</text>
 						</view>
 					</view>
@@ -25,7 +26,6 @@
 </template>
 
 <script>
-	const app = getApp()
 	import layout from "@/components/layout.nvue"
 	import scrollpage from "@/components/scrollpage.nvue"
 	export default {
@@ -33,48 +33,42 @@
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				lightList: [],
 				recentUse: []
 			}
 		},
-		onReady: function() {
-			var that = this;
-			app.ajax({
+		created:async function() {
+			var res = await uni.$app.request({
 				load: 1,
 				url: "http://windrunner_max.gitee.io/imgpath/SHST/Light/config.json",
-				success: function(res) {
-					var extList = [];
-					var innerList = [];
-					res.data.map(function(value, index) {
-						if (index && index % 4 === 0) {
-							extList.push(innerList);
-							innerList = [];
-						}
-						innerList.push(value);
-						return value;
-					});
-					let n = 4 - innerList.length;
-					for (var i = 0; i < n; i++) {
-						innerList.push({});
-					}
-					extList.push(innerList);
-					that.lightList = extList;
-				}
-			})
+            })
+            var extList = [];
+            var innerList = [];
+            res.data.map(function(value, index) {
+                if (index && index % 4 === 0) {
+                    extList.push(innerList);
+                    innerList = [];
+                }
+                innerList.push(value);
+                return value;
+            });
+            var n = 4 - innerList.length;
+            for(var i = 0; i < n; i++) innerList.push({});
+            extList.push(innerList);
+            this.lightList = extList;
 			uni.getStorage({
 				key: "recent",
-				success: function(res) {
-					that.recentUse = res.data
+				success: (res) => {
+					this.recentUse = res.data
 				}
 			})
 		},
 		methods: {
-			jump: function(e) {
-				var obj = e.currentTarget.dataset.obj;
+			jump: function(obj) {
 				uni.navigateTo({
-					url: '/pages/Home/auxiliary/webview?url=' + encodeURIComponent(obj.url)
+					url: "/pages/home/auxiliary/webview?url=" + encodeURIComponent(obj.url)
 				})
 				var curUse = this.recentUse;
 				if (JSON.stringify(curUse).indexOf(JSON.stringify(obj)) == -1) {
@@ -112,7 +106,7 @@
 		margin-top: 6px;
 	}
 
-	.y-CenterCon {
+	.y-center {
 		justify-content: space-around;
 	}
 </style>

@@ -2,9 +2,9 @@
 	<scrollpage>
 
 			<layout title="图书检索">
-				<view style='flex-direction: row;justify-content: center;align-items: center;margin: 10px'>
-					<input class='asse-input border' @input="bookInput" :value="book"></input>
-					<view class='btn' @tap='query'>
+				<view class="x-center y-center a-lmt">
+					<input class="asse-input border" @input="bookInput" :value="book"></input>
+					<view class="btn" @click="query">
 						<text class="text" style="color: #FFFFFF;">检索</text>
 					</view>
 				</view>
@@ -12,14 +12,14 @@
 
 			<view v-for="(item,index) in info" :key="index">
 				<layout>
-					<view style='flex-direction: row;' @tap='jump' :data-id="item.id">
-						<view class='fill'>
+					<view style="flex-direction: row;" @click="jump(item.id)">
+						<view class="fill">
 							<text class="text lv" style="font-size: 18px;">{{item.infoList[0]}}</text>
 							<text class="text lv">{{item.infoList[1]}}</text>
 							<text class="text lv">{{item.infoList[2]}}</text>
 							<text class="text lv">{{item.infoList[3]}}</text>
 						</view>
-						<view class='rightJump border'>
+						<view class="right-jump border">
 							<text class="iconfont" style="color: #AAAAAA;">&#xe743;</text>
 						</view>
 					</view>
@@ -27,12 +27,12 @@
 			</view>
 
 			<layout v-if="show">
-				<view class='operat'>
-					<view style='flex-direction: row;align-items: center;'>
-						<view @tap='pre' class='btn' >
+				<view class="operat">
+					<view style="flex-direction: row;align-items: center;">
+						<view @click="pre" class="btn" >
 							<text class="text" style="color: #FFFFFF;">上一页</text>
 						</view>
-						<view @tap='next' class='btn' style="margin-left: 10px;">
+						<view @click="next" class="btn a-lml">
 							<text class="text" style="color: #FFFFFF;">下一页</text>
 						</view>
 					</view>
@@ -51,45 +51,40 @@
 </template>
 
 <script>
-	const app = getApp();
-	const util = require("@/utils/util.js")
-	import layout from "@/components/layout.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
+	import util from "@/modules/datetime.js";
+    import {regMatch} from "@/modules/regex";
+	import layout from "@/components/layout.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				book: "",
 				page: 1,
-				show: 0,
+				show: false,
 				pageInfo: "",
 				info: []
 			}
 		},
-		onLoad: function(options) {
-			var curData = new Date();
-			var startTime = "7:00";
+		created: function(options) {
+			var startTime = "07:00";
 			var endTime = "22:30";
-			var curTime = curData.getHours() + ":" + curData.getMinutes();
-			if (util.compareTimeInSameDay(startTime, curTime) || util.compareTimeInSameDay(curTime, endTime)) {
-				app.toast("当前时间图书馆服务已关闭");
-				return;
-			}
+			var curTime = util.formatDate("hh:mm");
+			if (startTime > curTime || curTime > endTime) uni.$app.toast("当前时间图书馆服务已关闭");
 		},
 		methods: {
-			bookInput(e) {
-				this.book = e.detail.value
+			bookInput: function(e) {
+				this.book = e.detail.value;
 			},
-			query(e) {
+			query: async function(e) {
 				var param = "?q=" + this.book;
 				if (typeof(e) === "number") {
 					param += "&page=" + e;
 				}
-				var that = this;
-				app.ajax({
+				var res = await uni.$app.request({
 					load: 2,
 					url: "http://interlib.sdust.edu.cn/opac/m/search" + param,
 					data: {
@@ -97,51 +92,40 @@
 						"isFacet": "true",
 						"view": "standard",
 						"rows": "10",
-						"displayCoverImg": ""
-					},
-					fun: function(res) {
-						var bookList = [];
-						var repx = /<li onclick.*?>[\s\S]*?<\/li>/g;
-						var pageInfo = res.data.match(/第[\S]*页/);
-						res.data.match(repx).forEach(function(value, index, array) {
-							var listObject = {};
-							var infoBookFour = [];
-							repx = /<em>.*<\/em>/g;
-							value.match(repx).map(function(valueBook, indexBook, arrayBook) {
-								valueBook = valueBook.replace("<em>", "");
-								valueBook = valueBook.replace("</em>", "");
-								infoBookFour.push(valueBook);
-								return value;
-							})
-							listObject.infoList = infoBookFour;
-							repx = /javascript:bookDetail(.)*/g;
-							listObject.id = value.match(repx)[0].match(/[0-9]+/)[0];
-							bookList.push(listObject);
-						})
-						that.info = bookList
-						that.page = typeof(e) === "number" ? e : 1
-						that.pageInfo = pageInfo[0]
-						that.show = 1
-					}
-				})
+						"displayCoverImg": "",
+                    }
+                })
+                var bookList = [];
+                var repx = /<li (onclick.*?>[\s\S]*?)<\/li>/g;
+                var pageInfo = res.data.match(/[0-9][\S]*页/);
+                regMatch(repx,res.data).forEach((value, index, array) => {
+                    var listObject = {};
+                    repx = /<em>(.*?)<\/em>/g;
+                    listObject.infoList = regMatch(repx,value);
+                    repx = /javascript:bookDetail\(['"]\/opac\/m\/book\/(.*)['"]\)/g;
+                    listObject.id = regMatch(repx,value)[0];
+                    bookList.push(listObject);
+                })
+                this.info = bookList;
+                this.page = typeof(e) === "number" ? e : 1;
+                this.pageInfo = pageInfo[0];
+                this.show = true;
 			},
-			pre() {
+			pre: function() {
 				var curPage = parseInt(this.page);
 				if (curPage <= 0) return;
 				this.query(curPage - 1);
 			},
-			next() {
+			next: function() {
 				var curPage = parseInt(this.page);
 				this.query(curPage + 1);
 			},
-			jump(e) {
-				if (!e.currentTarget.dataset.id) {
-					app.toast("出错了");
-					return;
+			jump: function(id) {
+				if (!id) {
+					uni.$app.toast("出错了");
+					return void 0;
 				}
-				uni.navigateTo({
-					url: "libDetail?id=" + e.currentTarget.dataset.id
-				})
+				uni.navigateTo({url: "./lib-detail?id=" + id});
 			}
 		}
 	}
@@ -157,7 +141,7 @@
 		padding: 5px;
 		font-size: 15px;
 	}
-	
+
 	.btn {
 		background-color: #1E9FFF;
 		border-width: 0;
@@ -169,7 +153,7 @@
 		margin-top: 3px;
 	}
 
-	.rightJump {
+	.right-jump {
 		width: 50px;
 		flex-direction: row;
 		align-items: center;
@@ -188,7 +172,7 @@
 		font-size: 15px;
 		line-height: 27px;
 	}
-	
+
 	.lv{
 		line-height: 26px;
 		font-size: 15px;

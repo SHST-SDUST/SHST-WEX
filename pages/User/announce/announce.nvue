@@ -2,7 +2,7 @@
 	<scrollpage>
 
 		<headslot title="公告"></headslot>
-		<view style="margin-top: 10px;"></view>
+		<view class="gap"></view>
 
 		<layout v-for="(item,index) in data" :key="index">
 			<text class="text" style="line-height: 23px;">{{item.announce}}</text>
@@ -12,48 +12,40 @@
 </template>
 
 <script>
-	const app = getApp()
-	import layout from "@/components/layout.nvue"
-	import headslot from "@/components/headslot.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
+	import layout from "@/components/layout.nvue";
+	import headslot from "@/components/headslot.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			headslot,
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				data: []
 			}
 		},
-		onLoad: function(options) {
+		created: async function(options) {
 			uni.setStorage({
-				key: 'point',
-				data: app.globalData.tips
+				key: "point",
+				data: uni.$app.data.tips
 			})
 			var that = this;
-			app.ajax({
+			var res = await uni.$app.request({
 				load: 2,
-				url: 'https://www.touchczy.top/ext/announce',
-				fun: res => {
-					if (res.data.info) {
-						res.data.info.reverse();
-						that.data = res.data.info
-					}
-				}
-			})
-		},
-		methods: {
-			copy(e) {
-				uni.setClipboardData({
-					data: e.currentTarget.dataset.copy
-				})
-			}
+				url: "https://shst.touchczy.top/ext/announce",
+            })
+            if (res.data.info) {
+                res.data.info.reverse();
+                that.data = res.data.info
+            }
 		}
 	}
 </script>
 
-<style>
-
+<style scoped>
+    .gap{
+        height: 10px;
+    }
 </style>

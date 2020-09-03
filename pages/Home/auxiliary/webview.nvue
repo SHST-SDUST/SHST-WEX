@@ -10,10 +10,9 @@
 </template>
 
 <script>
-	const app = getApp();
 	const webview = weex.requireModule('webview')
 	export default {
-		data() {
+		data: function() {
 			return {
 				url: "",
 				webviewStyles: {
@@ -24,8 +23,6 @@
 			}
 		},
 		onLoad: function(options) {
-			const dom = weex.requireModule('dom');
-			// app.addIconfont(dom);
 			this.url = decodeURIComponent(options.url);
 		},
 		methods: {

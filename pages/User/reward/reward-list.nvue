@@ -2,15 +2,15 @@
 	<scrollpage>
 
 		<headslot title="赞赏列表"></headslot>
-		<view style="margin-top: 10px;"></view>
+		<view class="gap"></view>
 
 		<layout v-for="(item,index) in data" :key="index">
-			<view class='infoCon'>
-				<view class='left'>
-					<text class='name'>{{item.name}}</text>
-					<text class='time'>{{item.reward_time}}</text>
+			<view class="info-con">
+				<view class="left">
+					<text class="name">{{item.name}}</text>
+					<text class="time">{{item.reward_time}}</text>
 				</view>
-				<text class='amount' style="color: #4C98F7;">{{item.amount}}</text>
+				<text class="amount" style="color: #4C98F7;">{{item.amount}}</text>
 			</view>
 		</layout>
 
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-	const app = getApp()
 	import layout from "@/components/layout.nvue"
 	import headslot from "@/components/headslot.nvue"
 	import scrollpage from "@/components/scrollpage.nvue"
@@ -28,23 +27,20 @@
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				data: []
 			}
 		},
-		onLoad: function(options) {
-			var that = this;
-			app.ajax({
+		created: async function(options) {
+			var res = await uni.$app.request({
 				load: 2,
-				url: 'https://www.touchczy.top/ext/rewardlist',
-				fun: res => {
-					if (res.data.info) {
-						res.data.info.reverse();
-						that.data = res.data.info
-					}
-				}
-			})
+				url: "https://shst.touchczy.top/ext/rewardlist",
+            })
+            if (res.data.info) {
+                res.data.info.reverse();
+                this.data = res.data.info
+            }
 		},
 		methods: {
 
@@ -53,7 +49,11 @@
 </script>
 
 <style>
-	.infoCon {
+    .gap{
+        height: 10px;
+    }
+    
+	.info-con {
 		font-size: 13px;
 		line-height: 23px;
 		flex-direction: row;

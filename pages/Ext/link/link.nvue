@@ -2,10 +2,10 @@
 	<scrollpage>
 
 		<layout title="常用链接">
-			<view v-for="(item,index) in data" :key="index">
+			<view v-for="item in data" :key="item.url">
 				<view class="line border">
 					<text class="text">{{item.name}}：</text>
-					<text class=" text link" @tap="copy" :data-copy="item.url">{{item.url}}</text>
+					<text class="text link" @click="copy(item.url)">{{item.url}}</text>
 				</view>
 			</view>
 		</layout>
@@ -14,37 +14,31 @@
 </template>
 
 <script>
-	const app = getApp()
-	import layout from "@/components/layout.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
+	import layout from "@/components/layout.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function() {
 			return {
 				data: []
 			}
 		},
-		onLoad() {
-			var that = this
-			uni.request({
-				url: "https://www.touchczy.top/ext/urlshare",
+		created: async function() {
+			var res = await uni.$app.request({
+				url: "https://shst.touchczy.top/ext/urlshare",
 				header: {
 					'content-type': 'application/x-www-form-urlencoded'
 				},
-				success: (res) => {
-					that.data = res.data.url
-				}
-			})
-		},
+            })
+			this.data = res.data.url;
+        },
 		methods: {
-			copy(e) {
-				var url = encodeURIComponent(e.currentTarget.dataset.copy);
-				uni.navigateTo({
-					url: '/pages/Home/auxiliary/webview?url=' + url
-				})
+			copy: function(url) {
+				var url = encodeURIComponent(url);
+				uni.navigateTo({url: '/pages/home/auxiliary/webview?url=' + url})
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 	<scrollpage>
 
 		<layout title="空教室">
-			<view class='top'>
+			<view class="top">
 				<picker-view indicator-style="height: 40px;" style="width: 500rpx; height: 100px;" @change="bindPickerChange">
 					<picker-view-column>
 						<view v-for="(item,index) in queryData" :key="index" style="align-items: center;">
@@ -20,19 +20,19 @@
 						</view>
 					</picker-view-column>
 				</picker-view>
-				<view class='btn' @tap='loadClassroom'>
+				<view class="btn" @click="loadClassroom">
 					<text style="font-size: 15px;color: #FFFFFF;">搜索</text>
 				</view>
 			</view>
 		</layout>
 
 		<layout v-if="show" :title="qShow+'['+searchData+']'">
-			<view class='floorName'>
+			<view class="floor-name">
 				<text class="text">{{room[0].jxl}}</text>
 			</view>
-			<view class="roomCon">
+			<view class="room-con">
 				<view v-for="(inner,innerIndex) in room[0].jsList" :key="innerIndex">
-					<text class='unit text'>{{inner.jsmc}}</text>
+					<text class="unit text">{{inner.jsmc}}</text>
 				</view>
 			</view>
 		</layout>
@@ -41,22 +41,21 @@
 </template>
 
 <script>
-	const app = getApp()
-	const util = require("@/utils/util.js")
-	import layout from "@/components/layout.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
+	import util from "@/modules/datetime.js";
+	import layout from "@/components/layout.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			layout,
 			scrollpage
 		},
-		data() {
+		data: function(){
 			return {
-				show: 0,
+				show: false,
 				room: [],
 				qShow: "",
 				searchData: util.formatDate(),
-				searchTime: '0102',
+				searchTime: "0102",
 				searchFloor: 1,
 				index: [0, 0, 0],
 				queryData: [],
@@ -64,18 +63,18 @@
 				queryFloor: []
 			}
 		},
-		onLoad: function(options) {
+		created: function() {
 			util.extDate(); //拓展Date原型
 			var queryData = this.getTimeArr();
 			var queryTime = [
-				['12节', '0102', '12节(8:00-9:50)'],
-				['34节', '0304', '34节(10:10-12:00)'],
-				['56节', '0506', '56节(14:00-15:50)'],
-				['78节', '0708', '78节(16:00-17:50)'],
-				['9X节', '0910', '9X节(19:00-20:50)'],
-				['上午', 'am', '上午(8:00-12:00)'],
-				['下午', 'pm', '下午(14:00-17:50)'],
-				['全天', 'allday', '全天(8:00-20:50)']
+				["12节", "0102", "12节(8:00-9:50)"],
+				["34节", "0304", "34节(10:10-12:00)"],
+				["56节", "0506", "56节(14:00-15:50)"],
+				["78节", "0708", "78节(16:00-17:50)"],
+				["9X节", "0910", "9X节(19:00-20:50)"],
+				["上午", "am", "上午(8:00-12:00)"],
+				["下午", "pm", "下午(14:00-17:50)"],
+				["全天", "allday", "全天(8:00-20:50)"]
 			];
 			var queryFloor = [
 				["J1", "1"],
@@ -85,57 +84,49 @@
 				["J14", "14"],
 				["S1", "S1"]
 			];
-			this.queryData = queryData
-			this.queryTime = queryTime
-			this.queryFloor = queryFloor
+			this.queryData = queryData;
+			this.queryTime = queryTime;
+			this.queryFloor = queryFloor;
 		},
 		methods: {
-			flagChange(e) {
+			flagChange: function(e) {
 				var flagIndex = parseInt(e.currentTarget.dataset.index);
-				this.data.flag[flagIndex] = this.data.flag[flagIndex] === 'none' ? "flex" : "none";
-				this.flag = this.data.flag
+				this.data.flag[flagIndex] = this.data.flag[flagIndex] === "none" ? "flex" : "none";
+				this.flag = this.data.flag;
 			},
-			loadClassroom(e) {
-				var that = this;
-				that.loadClassroomSetTime(e);
+			loadClassroom: function(e) {
+				this.loadClassroomSetTime(e);
 			},
-			loadClassroomSetTime(e) {
-				var that = this;
-				app.ajax({
+			loadClassroomSetTime:async function(e) {
+				var res = await uni.$app.request({
 					load: 2,
-					url: app.globalData.url,
+					url: uni.$app.data.url,
 					data: {
 						"method": "getKxJscx",
-						"time": that.searchData,
-						"idleTime": that.searchTime,
+						"time": this.searchData,
+						"idleTime": this.searchTime,
 						"xqid": 1,
-						"jxlid": that.searchFloor,
+						"jxlid": this.searchFloor,
 					},
-					fun: function(res) {
-						if (res.data.flag) {
-							this.completeLoad = () => {
-								app.toast("未生成教学周历");
-							}
-							return;
-						}
-						var data = res.data;
-						if (!data[0]) data = [{
-							"jxl": "青岛校区-" + that.searchFloor + "号楼",
-							jsList: [{
-								jsmc: "无空教室"
-							}]
-						}];
-						data[0].jsList.sort((a, b) => {
-							return a.jsmc > b.jsmc ? 1 : -1;
-						});
-						that.room = data
-						that.show = 1
-						that.qShow = that.queryTime[that.index[1]][2]
-						that.searchData = that.searchData
-					}
-				})
+                })
+                if (res.data.flag) {
+                    uni.$app.toast("未生成教学周历");
+                    return void 0;
+                }
+                var data = res.data;
+                if (!data[0]) data = [{
+                    "jxl": "青岛校区-" + this.searchFloor + "号楼",
+                    jsList: [{
+                        jsmc: "无空教室"
+                    }]
+                }];
+                data[0].jsList.sort((a, b) => a.jsmc > b.jsmc ? 1 : -1);
+                this.room = data;
+                this.show = true;
+                this.qShow = this.queryTime[this.index[1]][2];
+                this.searchData = this.searchData;
 			},
-			getTimeArr() {
+			getTimeArr: function() {
 				var weekShow = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 				var date = new Date();
 				var year = date.getFullYear();
@@ -154,21 +145,20 @@
 				console.log(queryDataArr);
 				return queryDataArr;
 			},
-			bindPickerChange(e) {
+			bindPickerChange: function(e) {
 				var arr = [0, 0, 0];
 				arr = arr.map((value, index) => {
 					if (e.detail.value[index]) return e.detail.value[index];
 					else return 0;
 				})
-				var that = this;
 				this.index = arr;
-				this.searchData = that.queryData[arr[0]][0];
-				this.searchTime = that.queryTime[arr[1]][1];
-				this.searchFloor = that.queryFloor[arr[2]][1];
+				this.searchData = this.queryData[arr[0]][0];
+				this.searchTime = this.queryTime[arr[1]][1];
+				this.searchFloor = this.queryFloor[arr[2]][1];
 			},
-			resetInfo() {
-				this.searchData = util.formatDate()
-				this.searchTime = '0102'
+			resetInfo: function() {
+				this.searchData = util.formatDate();
+				this.searchTime = "0102";
 			}
 		}
 	}
@@ -189,7 +179,7 @@
 		margin: 3px;
 	}
 
-	.floorName {
+	.floor-name {
 		padding: 10px 0;
 		justify-content: center;
 		flex-direction: row;
@@ -199,7 +189,7 @@
 		border-bottom-width: 1px;
 	}
 
-	.roomCon {
+	.room-con {
 		flex-direction: row;
 		flex-wrap: wrap;
 		align-items: center;

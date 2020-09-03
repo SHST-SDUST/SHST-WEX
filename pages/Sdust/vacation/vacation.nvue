@@ -5,7 +5,7 @@
 			<view v-for="(item,index) in data" :key="index">
 				<layout>
 					<view class="fline">
-						<view class="dot" v-bind:style="{'background-color': colorList[index]}"></view>
+						<view class="dot" v-bind:style="{'background-color': colorList[index % colorList.length]}"></view>
 						<text class="flinev">{{item.name}}</text>
 						<text class="flinev">{{item.v_time}}</text>
 					</view>
@@ -17,33 +17,28 @@
 </template>
 
 <script>
-	const app = getApp()
-	import layout from "@/components/layout.nvue"
-	import scrollpage from "@/components/scrollpage.nvue"
-	var colorList = app.globalData.colorList
+	import layout from "@/components/layout.nvue";
+	import scrollpage from "@/components/scrollpage.nvue";
 	export default {
 		components: {
 			layout,scrollpage
 		},
-		data() {
+		data: function() {
 			return {
-				show: 0,
+				show: false,
 				data: [],
-				colorList: colorList
+				colorList: uni.$app.data.colorList
 			}
 		},
-		onLoad() {
-			var that = this
-			uni.request({
-				url: "https://www.touchczy.top/ext/vacation",
+		created: async function() {
+			var res = await uni.$app.request({
+				url: "https://shst.touchczy.top/ext/vacation",
 				header: {
-					'content-type': 'application/x-www-form-urlencoded'
+					'content-type': 'uni.$application/x-www-form-urlencoded'
 				},
-				success: (res) => {
-					that.data = res.data.info
-					that.show = 1
-				}
-			})
+            })
+            this.data = res.data.info;
+            this.show = true;
 		},
 		methods: {
 

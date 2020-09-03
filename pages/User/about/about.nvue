@@ -1,46 +1,45 @@
 <template>
 	<view class="page">
 
-		<view class="x-CenterCon">
-			<image style="width: 270px;height: 90px;margin-top: 20px;" src="http://windrunner_max.gitee.io/imgpath/SHST/Static/SHST.jpg">
-			</image>
+		<view class="x-center">
+			<image class="img"  src="http://windrunner_max.gitee.io/imgpath/SHST/Static/SHST.jpg"></image>
 		</view>
 
 
-		<view class='userInfoCon'>
-			<view class='unitInfo border' style='border-top-width: 1px'>
+		<view class="user-info-con">
+			<view class="unit-info border" style="border-top-width: 1px">
 
-				<view style='flex-direction: row;'>
+				<view style="flex-direction: row;">
 					<text class="text">版本号</text>
 				</view>
 				<text class="text">{{version}}</text>
 			</view>
 
-			<view class='unitInfo border'>
-				<view style='flex-direction: row;'>
+			<view class="unit-info border">
+				<view style="flex-direction: row;">
 					<text class="text">反馈QQ群</text>
 				</view>
-				<text class='text link' data-copy='522567369' @tap='copy'>522567369</text>
+				<text class="text link" @click="copy('522567369')">522567369</text>
 			</view>
 
-			<view class='unitInfo border'>
-				<view style='flex-direction: row;'>
+			<view class="unit-info border">
+				<view style="flex-direction: row;">
 					<text class="text">联系开发者</text>
 				</view>
-				<view class='link' data-copy='651525974' @tap='copy' style='flex-direction: row;'>
+				<view class="link" @click="copy('651525974')" style="flex-direction: row;">
 					<text class="text link">651525974</text>
 				</view>
 			</view>
 
-			<view class='unitInfo border' data-jumpurl='https://github.com/WindrunnerMax/SW' @tap='jump'>
-				<view style='flex-direction: row;'>
+			<view class="unit-info border" @click="jump('https://github.com/WindrunnerMax/SW')">
+				<view style="flex-direction: row;">
 					<text class="text">项目开源地址</text>
 				</view>
 				<text class="text">></text>
 			</view>
 
-			<view class='unitInfo border' data-jumpurl="https://github.com/WindrunnerMax/SW/blob/SDUST/ChangeLog.md" @tap='jump'>
-				<view style='flex-direction: row;'>
+			<view class="unit-info border" @click="jump('https://github.com/WindrunnerMax/SW/blob/SDUST/ChangeLog.md')">
+				<view style="flex-direction: row;">
 					<text class="text">项目更新日志</text>
 				</view>
 				<text class="text">></text>
@@ -48,33 +47,26 @@
 
 		</view>
 
-
-
 		<view class="footer">
-			<text class="ftext">Copyright © 2019 WindrunnerMax</text>
+			<text class="ftext">Copyright © 2020 WindrunnerMax</text>
 		</view>
 
 	</view>
 </template>
 
 <script>
-	const app = getApp()
 	export default {
-		data() {
+		data: function() {
 			return {
-				version: app.globalData.version
+				version: uni.$app.data.version
 			}
 		},
 		methods: {
-			copy: function(e) {
-				uni.setClipboardData({
-					data: e.currentTarget.dataset.copy
-				})
+			copy: function(copy) {
+				uni.setClipboardData({data: copy})
 			},
-			jump: function(e) {
-				uni.navigateTo({
-					url: '/pages/Home/auxiliary/webview?url=' + encodeURIComponent(e.currentTarget.dataset.jumpurl)
-				})
+			jump: function(jumpurl) {
+				uni.navigateTo({url: "/pages/home/auxiliary/webview?url=" + encodeURIComponent(jumpurl)})
 			}
 		}
 	}
@@ -93,12 +85,12 @@
 		margin-top: 20px;
 	}
 
-	.userInfoCon {
+	.user-info-con {
 		margin-top: 27px;
 		padding: 10px;
 	}
 
-	.unitInfo {
+	.unit-info {
 		height: 50px;
 		line-height: 50px;
 		border-bottom-width: 1px;
@@ -114,7 +106,7 @@
 
 	.footer {
 		flex-direction: row;
-		margin-top: 30px;
+		margin: 30px 0;
 		justify-content: center;
 	}
 
