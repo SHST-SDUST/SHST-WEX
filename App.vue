@@ -2,7 +2,7 @@
     import dispose from "@/vector/dispose.js";
     export default {
         globalData: {
-            url: "http://219.218.128.228/app.do",
+            url: "http://jwgl.sdust.edu.cn/app.do",
         },
         onLaunch: function() {
             console.log("APP INIT");

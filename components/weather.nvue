@@ -1,28 +1,28 @@
 <template name="weather">
 	<view>
 
-		<view class='weather border'>
-			<view class='weaLeft border'>
+		<view class="weather border">
+			<view class="wea-left border">
 				<view style="align-items: center;justify-content: center;">
-					<image class='todayImg' resize="contain" :src="host+'/public/static/weather/'+todayWeather[1]+'.png'"></image>
+					<image class="today-img" resize="contain" :src="host+'/public/static/weather/'+todayWeather[1]+'.png'"></image>
 				</view>
-				<text class="text" style='text-align:center;margin-top:6px;'>{{todayWeather[0]}}</text>
-				<text class="text" style='text-align:center;margin-top:3px;'>{{todayWeather[2]}}℃ - {{todayWeather[3]}}℃</text>
-				<text class="text" style='text-align:center;margin-top:3px;'>{{todayWeather[4]}}</text>
+				<text class="text weather-first">{{todayWeather[0]}}</text>
+				<text class="text weather-second">{{todayWeather[2]}}℃ - {{todayWeather[3]}}℃</text>
+				<text class="text weather-second">{{todayWeather[4]}}</text>
 			</view>
-			<view class='weaRight'>
-				<view class='weaRightTop border right-border'>
-					<image class='dayImg' resize="contain" :src="host+'/public/static/weather/'+tomorrowWeather[1]+'.png'"></image>
-					<view class='weatherCon'>
-						<text class="text" style='text-align:center;margin-top:6px;'>{{tomorrowWeather[0]}}</text>
-						<text class="text" style='text-align:center;margin-top:3px;'>{{tomorrowWeather[2]}}℃ - {{tomorrowWeather[3]}}℃</text>
+			<view class="weaRight">
+				<view class="wea-right-top border right-border">
+					<image class="day-img" resize="contain" :src="host+'/public/static/weather/'+tomorrowWeather[1]+'.png'"></image>
+					<view class="weatherCon">
+						<text class="text weather-first">{{tomorrowWeather[0]}}</text>
+						<text class="text weather-second">{{tomorrowWeather[2]}}℃ - {{tomorrowWeather[3]}}℃</text>
 					</view>
 				</view>
-				<view class='weaRightBot'>
-					<image class='dayImg' resize="contain" :src="host+'/public/static/weather/'+tdatomoWeather[1]+'.png'"></image>
-					<view class='weatherCon'>
-						<text class="text" style='text-align:center;margin-top:3px;'>{{tdatomoWeather[0]}}</text>
-						<text class="text" style='text-align:center;'>{{tdatomoWeather[2]}}℃ - {{tdatomoWeather[3]}}℃</text>
+				<view class="wea-right-bot">
+					<image class="day-img" resize="contain" :src="host+'/public/static/weather/'+tdatomoWeather[1]+'.png'"></image>
+					<view class="weatherCon">
+						<text class="text weather-second">{{tdatomoWeather[0]}}</text>
+						<text class="text" style="text-align:center;">{{tdatomoWeather[2]}}℃ - {{tdatomoWeather[3]}}℃</text>
 					</view>
 				</view>
 			</view>
@@ -76,18 +76,27 @@
 		flex-direction: row;
 	}
 
-	.weaLeft {
+	.wea-left {
 		padding: 10px;
 		border-right-width: 1px;
 		flex: 1;
 	}
 
-	.todayImg {
+	.today-img {
 		width: 40px;
 		height: 40px;
 	}
 
-	.dayImg {
+    .weather-first{
+        text-align:center;
+        margin-top:6px;
+    }
+    .weather-second{
+        text-align:center;
+        margin-top:3px;
+    }
+
+	.day-img {
 		width: 30px;
 		height: 30px;
 		margin: 0 15px 0 0;
@@ -97,9 +106,9 @@
 		justify-content: center;
 		flex: 1;
 	}
-	
-	.weaRightBot,
-	.weaRightTop {
+
+	.wea-right-bot,
+	.wea-right-top {
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
@@ -110,13 +119,13 @@
 	.right-border{
 		border-bottom-width: 1px;
 	}
-	
+
 	.weatherCon{
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
 	}
-	
+
 	.text{
 		font-size: 13px;
 	}

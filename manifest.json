@@ -2,8 +2,8 @@
     "name" : "山科小站",
     "appid" : "__UNI__08D8F46",
     "description" : "山科小站",
-    "versionName" : "3.2.1",
-    "versionCode" : 321,
+    "versionName" : "3.3.1",
+    "versionCode" : 331,
     "transformPx" : false,
     "networkTimeout" : 2000,
     /* 5+App特有相关 */
@@ -68,7 +68,10 @@
         },
         "compilerVersion" : 3,
         "nvueLaunchMode" : "fast",
-        "renderer" : "native"
+        "renderer" : "native",
+        "uniStatistics" : {
+            "enable" : true
+        }
     },
     /* 快应用特有相关 */
     "quickapp" : {},
@@ -78,15 +81,40 @@
         "setting" : {
             "urlCheck" : false
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : true
+        }
     },
     "mp-alipay" : {
-        "usingComponents" : true
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : true
+        }
     },
     "mp-baidu" : {
-        "usingComponents" : true
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : true
+        }
     },
     "mp-toutiao" : {
-        "usingComponents" : true
+        "usingComponents" : true,
+        "uniStatistics" : {
+            "enable" : true
+        }
+    },
+    "uniStatistics" : {
+        "enable" : true
+    },
+    "h5" : {
+        "uniStatistics" : {
+            "enable" : true
+        }
+    },
+    "mp-qq" : {
+        "uniStatistics" : {
+            "enable" : true
+        }
     }
 }
